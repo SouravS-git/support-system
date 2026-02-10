@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\TicketPriority;
+use App\TicketStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +19,20 @@ class TicketFactory extends Factory
      */
     public function definition(): array
     {
+        $priority = $this->faker->randomElement(TicketPriority::cases());
+        $status = $this->faker->randomElement(TicketStatus::cases());
+
         return [
-            //
+            'created_by' => User::factory(),
+            'subject' => $this->faker->sentence(),
+            'description' => $this->faker->paragraph(10),
+            'priority' => $priority,
+            'status' => $status,
+            'sla_due_at' => match ($priority) {
+                TicketPriority::HIGH->value => now()->addHours(1),
+                TicketPriority::MEDIUM->value => now()->addHours(4),
+                default => now()->addHours(24),
+            },
         ];
     }
 }

@@ -2,6 +2,22 @@
 
 use App\Models\User;
 
+it('allows customers to load the create ticket page', function () {
+    $user = User::factory()->create([
+        'role' => 'customer',
+    ]);
+
+    $this->actingAs($user)->get(route('tickets.create'))->assertOk();
+});
+
+it('does not allow agents to load the create ticket page', function () {
+    $user = User::factory()->create([
+        'role' => 'agent',
+    ]);
+
+    $this->actingAs($user)->get(route('tickets.create'))->assertForbidden();
+});
+
 it('allows customers to create tickets', function () {
     $user = User::factory()->create([
         'role' => 'customer',

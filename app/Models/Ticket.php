@@ -9,6 +9,8 @@ use App\TicketStatus;
 use Database\Factories\TicketFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ticket extends Model
@@ -22,6 +24,7 @@ class Ticket extends Model
         'subject',
         'description',
         'priority',
+        'status',
         'sla_due_at',
         'first_response_at',
         'sla_breached_at',
@@ -38,4 +41,19 @@ class Ticket extends Model
     protected $attributes = [
         'status' => TicketStatus::OPEN->value,
     ];
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function replies(): HasMany
+    {
+        return $this->hasMany(TicketReply::class);
+    }
 }

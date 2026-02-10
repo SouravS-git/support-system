@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tickets\StoreTicketRequest;
 use App\Http\Requests\Tickets\UpdateTicketRequest;
 use App\Models\Ticket;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class TicketController extends Controller
@@ -16,9 +17,19 @@ class TicketController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): void
+    public function index()
     {
-        //
+        $user = Auth::user();
+
+        $tickets = match (true) {
+            $user->isAdmin() => Ticket::latest()->paginate(10),
+            $user->isAgent() => $user->assignedTickets()->latest()->paginate(10),
+            default => $user->createdTickets()->latest()->paginate(10),
+        };
+
+        return view('tickets.index', [
+            'tickets' => $tickets,
+        ]);
     }
 
     /**
@@ -38,15 +49,21 @@ class TicketController extends Controller
     {
         Gate::authorize('create', Ticket::class);
 
-        return $action->handle($request->validated());
+        $ticket = $action->handle($request->validated());
+
+        return redirect()->route('tickets.show', $ticket)->with('success', 'Ticket created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Ticket $ticket): void
+    public function show(Ticket $ticket)
     {
-        //
+        Gate::authorize('view', $ticket);
+
+        return view('tickets.show', [
+            'ticket' => $ticket,
+        ]);
     }
 
     /**
