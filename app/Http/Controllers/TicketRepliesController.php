@@ -38,6 +38,7 @@ class TicketRepliesController extends Controller
             'is_internal' => $request->validated('is_internal') ?? false,
         ]);
 
+        // SLA Stops when the agent makes the first response, and it's true even for internal replies
         if ($request->user()->isAgent() && $ticket->first_response_at === null) {
             $ticket->update(['first_response_at' => now()]);
         }
