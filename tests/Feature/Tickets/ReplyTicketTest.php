@@ -12,7 +12,7 @@ it('customers can reply to their own tickets', function () {
     $ticket = Ticket::factory()->for($customer, 'creator')->create();
 
     $response = $this->actingAs($customer)
-        ->post(route('tickets.reply.store', $ticket), [
+        ->post(route('tickets.replies.store', $ticket), [
             'message' => 'This is the message of a reply',
         ]);
 
@@ -52,7 +52,7 @@ it('allows agents to add internal replies to tickets', function () {
     $ticket = Ticket::factory()->for($agent, 'assignee')->create();
 
     $this->actingAs($agent)
-        ->post(route('tickets.reply.store', $ticket), [
+        ->post(route('tickets.replies.store', $ticket), [
             'message' => 'This is an internal reply',
             'is_internal' => true,
         ])->assertRedirectBack();

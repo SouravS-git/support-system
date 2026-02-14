@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'customer',
         ]);
 
-        $tickets = Ticket::factory(1000)->create([
+        $tickets = Ticket::factory(100)->create([
             'created_by' => $customer->id,
             'assigned_to' => $agent->id,
         ]);

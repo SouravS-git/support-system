@@ -9,7 +9,7 @@ use App\Http\Requests\UpdateTicketReplyRequest;
 use App\Models\Ticket;
 use App\Models\TicketReply;
 
-class TicketReplyController extends Controller
+class TicketRepliesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -37,6 +37,10 @@ class TicketReplyController extends Controller
             'message' => $request->validated('message'),
             'is_internal' => $request->validated('is_internal') ?? false,
         ]);
+
+        if ($request->user()->isAgent() && $ticket->first_response_at === null) {
+            $ticket->update(['first_response_at' => now()]);
+        }
 
         return back();
     }

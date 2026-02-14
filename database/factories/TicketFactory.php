@@ -19,8 +19,8 @@ class TicketFactory extends Factory
      */
     public function definition(): array
     {
-        $priority = $this->faker->randomElement(TicketPriority::cases());
-        $status = $this->faker->randomElement(TicketStatus::cases());
+        $priority = $this->faker->randomElement(TicketPriority::cases())->value;
+        $status = $this->faker->randomElement(TicketStatus::cases())->value;
 
         return [
             'created_by' => User::factory(),

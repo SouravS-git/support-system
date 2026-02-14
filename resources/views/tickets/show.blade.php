@@ -94,7 +94,7 @@
                             @endif
 
                             <div class="p-6 bg-gray-50 border-t border-gray-200">
-                                <form action="{{ route('tickets.reply.store', $ticket) }}" method="POST" class="space-y-4">
+                                <form action="{{ route('tickets.replies.store', $ticket) }}" method="POST" class="space-y-4">
                                     @csrf
                                     <div class="relative">
                                         <textarea

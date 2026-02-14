@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TicketReplyController;
+use App\Http\Controllers\TicketRepliesController;
 use App\Http\Controllers\Tickets\TicketController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +23,7 @@ Route::middleware(['auth'])->group(function (): void {
     Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
 
-    Route::post('/ticket/{ticket}/reply', [TicketReplyController::class, 'store'])->name('tickets.reply.store');
+    Route::post('/ticket/{ticket}/replies', [TicketRepliesController::class, 'store'])->name('tickets.replies.store');
 });
 
 require __DIR__.'/auth.php';

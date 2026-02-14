@@ -28,6 +28,7 @@ class Ticket extends Model
         'sla_due_at',
         'first_response_at',
         'sla_breached_at',
+        'sla_notified_at',
     ];
 
     protected $casts = [
@@ -36,6 +37,7 @@ class Ticket extends Model
         'sla_breached_at' => 'datetime',
         'status' => TicketStatus::class,
         'priority' => TicketPriority::class,
+        'sla_notified_at' => 'datetime',
     ];
 
     protected $attributes = [
