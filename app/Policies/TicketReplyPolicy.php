@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Models\User;
 
@@ -28,9 +29,17 @@ class TicketReplyPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Ticket $ticket): bool
     {
-        return false;
+        if ($user->isAdmin()){
+            return true;
+        }
+
+        if ($user->isAgent()){
+            return $ticket->assigned_to === $user->id;
+        }
+
+        return $ticket->created_by === $user->id;
     }
 
     /**
