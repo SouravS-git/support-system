@@ -35,10 +35,42 @@
                             </div>
                         </div>
 
-                        <div class="border-t pt-4">
+                        <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
+                            <div class="text-sm font-medium text-gray-700">
+                                Assigned Agent:
+                                <span class="font-bold text-indigo-600">
+                                    {{ $ticket->assignee->name ?? 'Not yet assigned' }}
+                                </span>
+                            </div>
+                            @can('assign', $ticket)
+                                <div class="flex items-end gap-4">
+                                    <form action="{{ route('tickets.assign', $ticket) }}" method="POST" class="flex items-center gap-2">
+                                        @csrf
+                                        @method('PATCH')
+                                        <select name="agent_id" class="text-sm rounded-md border-gray-300 shadow-inner transition-all focus:outline-2 focus:-outline-offset-2 focus:border-indigo-500 focus:ring-indigo-500">
+                                            <option value="">Select Agent</option>
+                                            @foreach($agents as $agent)
+                                                <option value="{{ $agent->id }}" name="agent_id" @selected($ticket->assigned_to == $agent->id)>
+                                                    {{ $agent->name }}&nbsp;({{ $agent->email }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Assign</button>
+                                    </form>
+                                </div>
+                            @endcan
+                        </div>
+                        <div class="flex items-center justify-end">
+                            @error('agent_id')
+                            <x-input-error :messages="$message"></x-input-error>
+                            @enderror
+                        </div>
+
+                        <div class="pt-4">
                             <p>{{ $ticket->description }}</p>
                         </div>
                     </div>
+
                     <div class="max-w-7xl mx-auto px-4 py-10">
                         <div class="bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden flex flex-col">
 
@@ -101,7 +133,7 @@
                                             name="message"
                                             rows="5"
                                             placeholder="Share your thoughts or updates..."
-                                            class="w-full p-4 rounded-xl border border-gray-300 shadow-inner transition-all focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 text-sm resize-none"
+                                            class="w-full p-4 rounded-xl border border-gray-300 shadow-inner transition-all focus:outline-2 focus:-outline-offset-2 focus:border-indigo-500 focus:ring-indigo-500 text-sm resize-none"
                                             required
                                         ></textarea>
                                         @error('message')

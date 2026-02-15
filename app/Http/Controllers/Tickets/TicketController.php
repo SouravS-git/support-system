@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tickets\StoreTicketRequest;
 use App\Http\Requests\Tickets\UpdateTicketRequest;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
@@ -63,6 +64,7 @@ class TicketController extends Controller
 
         return view('tickets.show', [
             'ticket' => $ticket,
+            'agents' => User::where('role', 'agent')->get(),
         ]);
     }
 

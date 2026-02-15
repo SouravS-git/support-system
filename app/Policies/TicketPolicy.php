@@ -72,4 +72,9 @@ class TicketPolicy
     {
         return false;
     }
+
+    public function assign(User $user, Ticket $ticket): bool
+    {
+        return $user->isAdmin();
+    }
 }
