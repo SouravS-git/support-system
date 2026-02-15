@@ -8,7 +8,6 @@ use App\Http\Requests\StoreTicketReplyRequest;
 use App\Http\Requests\UpdateTicketReplyRequest;
 use App\Models\Ticket;
 use App\Models\TicketReply;
-use App\Policies\TicketReplyPolicy;
 use Illuminate\Support\Facades\Gate;
 
 class TicketRepliesController extends Controller

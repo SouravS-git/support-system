@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Notifications;
 
 use App\Models\Ticket;
@@ -37,7 +39,7 @@ class TicketAssignedNotification extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject('New ticket assigned')
-            ->line('Ticket #' . $this->ticket->id . ' has been assigned to you.')
+            ->line('Ticket #'.$this->ticket->id.' has been assigned to you.')
             ->action('View Ticket', route('tickets.show', $this->ticket));
     }
 

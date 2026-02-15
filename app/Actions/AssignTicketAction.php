@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions;
 
 use App\Events\TicketAssigned;
@@ -21,10 +23,10 @@ class AssignTicketAction
     {
         $updated = $ticket->update([
             'assigned_to' => $validatedData['agent_id'],
-            'status' => TicketStatus::IN_PROGRESS->value
+            'status' => TicketStatus::IN_PROGRESS->value,
         ]);
 
-        if (! $updated){
+        if (! $updated) {
             throw new RuntimeException('Ticket assignment failed');
         }
 

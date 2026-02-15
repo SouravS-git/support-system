@@ -31,11 +31,11 @@ class TicketReplyPolicy
      */
     public function create(User $user, Ticket $ticket): bool
     {
-        if ($user->isAdmin()){
+        if ($user->isAdmin()) {
             return true;
         }
 
-        if ($user->isAgent()){
+        if ($user->isAgent()) {
             return $ticket->assigned_to === $user->id;
         }
 

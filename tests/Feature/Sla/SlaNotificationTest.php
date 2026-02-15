@@ -5,7 +5,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\SlaBreachedNotification;
 
-it('does not send duplicate sla breach notifications', function(){
+it('does not send duplicate sla breach notifications', function () {
     Notification::fake();
 
     $admin = User::factory()->create([
