@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TicketAssignmentController;
 use App\Http\Controllers\TicketRepliesController;
 use App\Http\Controllers\Tickets\TicketController;
+use App\Http\Controllers\TicketStatusController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'));
@@ -27,6 +28,9 @@ Route::middleware(['auth'])->group(function (): void {
     Route::post('/ticket/{ticket}/replies', [TicketRepliesController::class, 'store'])->name('tickets.replies.store');
 
     Route::patch('/tickets/{ticket}/assign', TicketAssignmentController::class)->name('tickets.assign');
+
+    Route::patch('/tickets/{ticket}/resolve', [TicketStatusController::class, 'resolve'])->name('tickets.resolve');
+    Route::patch('/tickets/{ticket}/close', [TicketStatusController::class, 'close'])->name('tickets.close');
 });
 
 require __DIR__.'/auth.php';

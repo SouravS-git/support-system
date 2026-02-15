@@ -19,7 +19,7 @@
                             Ticket #{{ $ticket->id }} — {{ $ticket->subject }}
                         </h1>
 
-                        <div class="flex items-center gap-4 mb-5">
+                        <div class="flex items-center gap-4">
                             <div class="flex items-center gap-2">
                                 <x-status-label :status="$ticket->status->value">
                                     {{ $ticket->status->label() }}
@@ -34,6 +34,34 @@
                                 </x-priority-label>
                             </div>
                         </div>
+
+                        @can('resolve', $ticket)
+                            @if($ticket->canTransitionTo(\App\TicketStatus::RESOLVED))
+                                <div class="flex items-center justify-end">
+                                    <form method="POST" action="{{ route('tickets.resolve', $ticket) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="bg-blue-600 text-white px-3 py-1 rounded">
+                                            Mark as Resolved
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
+                        @endcan
+
+                        @can('close', $ticket)
+                            @if($ticket->canTransitionTo(\App\TicketStatus::CLOSED))
+                                <div class="flex items-center justify-end">
+                                    <form method="POST" action="{{ route('tickets.close', $ticket) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="bg-gray-800 text-white px-3 py-1 rounded">
+                                            Close Ticket
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
+                        @endcan
 
                         <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
                             <div class="text-sm font-medium text-gray-700">

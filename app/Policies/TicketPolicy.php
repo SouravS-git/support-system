@@ -77,4 +77,14 @@ class TicketPolicy
     {
         return $user->isAdmin();
     }
+
+    public function resolve(User $user, Ticket $ticket): bool
+    {
+        return $user->isAgent();
+    }
+
+    public function close(User $user, Ticket $ticket): bool
+    {
+        return $user->isAdmin();
+    }
 }

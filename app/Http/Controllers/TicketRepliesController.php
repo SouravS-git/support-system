@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Tickets\TicketReplyAction;
 use App\Http\Requests\StoreTicketReplyRequest;
 use App\Http\Requests\UpdateTicketReplyRequest;
 use App\Models\Ticket;
@@ -31,20 +32,11 @@ class TicketRepliesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTicketReplyRequest $request, Ticket $ticket)
+    public function store(StoreTicketReplyRequest $request, TicketReplyAction $action, Ticket $ticket)
     {
         Gate::authorize('create', [TicketReply::class, $ticket]);
 
-        $ticket->replies()->create([
-            'user_id' => $request->user()->id,
-            'message' => $request->validated('message'),
-            'is_internal' => $request->validated('is_internal') ?? false,
-        ]);
-
-        // SLA Stops when the agent makes the first response, and it's true even for internal replies
-        if ($request->user()->isAgent() && $ticket->first_response_at === null) {
-            $ticket->update(['first_response_at' => now()]);
-        }
+        $action->handle($request->validated(), $ticket);
 
         return back();
     }

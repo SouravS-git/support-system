@@ -7,6 +7,7 @@ namespace App\Models;
 use App\TicketPriority;
 use App\TicketStatus;
 use Database\Factories\TicketFactory;
+use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -57,5 +58,33 @@ class Ticket extends Model
     public function replies(): HasMany
     {
         return $this->hasMany(TicketReply::class);
+    }
+
+    // Domain modeling for business rule enforcement
+    public function canTransitionTo(TicketStatus $newStatus): bool
+    {
+        return match ($this->status) {
+            TicketStatus::OPEN, TicketStatus::WAITING_FOR_CUSTOMER => $newStatus === TicketStatus::IN_PROGRESS,
+
+            TicketStatus::IN_PROGRESS => in_array($newStatus, [TicketStatus::WAITING_FOR_CUSTOMER, TicketStatus::RESOLVED]),
+
+            TicketStatus::RESOLVED => $newStatus === TicketStatus::CLOSED,
+
+            default => false,
+        };
+    }
+
+    public function transitionTo(TicketStatus $newStatus): void
+    {
+        if (! $this->canTransitionTo($newStatus)) {
+            throw new DomainException('Invalid status transition.');
+        }
+
+        $this->update(['status' => $newStatus]);
+    }
+
+    public function hasFirstResponse(): bool
+    {
+        return $this->first_response_at !== null;
     }
 }
