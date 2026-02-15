@@ -3,7 +3,7 @@
 use App\Models\Ticket;
 use App\Models\User;
 
-it('shows only own tickets to the customers', function () {
+it('allows customers to see their own tickets', function () {
     $customer = User::factory()->create([
         'role' => 'customer',
     ]);
@@ -17,7 +17,7 @@ it('shows only own tickets to the customers', function () {
         ->assertDontSee($otherTicket->subject);
 });
 
-it('shows only assigned tickets to the agents', function () {
+it('allows agents to see tickets assigned to them', function () {
     $agent = User::factory()->create([
         'role' => 'agent',
     ]);
@@ -31,7 +31,7 @@ it('shows only assigned tickets to the agents', function () {
         ->assertDontSee($otherTicket->subject);
 });
 
-it('shows all tickets to the admins', function () {
+it('allows admins to see all the tickets', function () {
     $admin = User::factory()->create([
         'role' => 'admin',
     ]);
@@ -43,7 +43,7 @@ it('shows all tickets to the admins', function () {
         ->assertSee($ticket->subject);
 });
 
-it('prevents customers from viewing tickets created by others', function () {
+it('prevents customers from viewing details of tickets created by others', function () {
     $customer = User::factory()->create([
         'role' => 'customer',
     ]);
@@ -55,7 +55,7 @@ it('prevents customers from viewing tickets created by others', function () {
         ->assertForbidden();
 });
 
-it('prevents agents from viewing tickets assigned to others', function () {
+it('prevents agents from viewing details of tickets assigned to others', function () {
     $agent = User::factory()->create([
         'role' => 'agent',
     ]);
@@ -69,7 +69,7 @@ it('prevents agents from viewing tickets assigned to others', function () {
         ->assertForbidden();
 });
 
-it('allows admins to view all the tickets', function () {
+it('allows admins to view details of all the tickets', function () {
     $admin = User::factory()->create([
         'role' => 'admin',
     ]);
