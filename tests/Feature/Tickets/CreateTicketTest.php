@@ -46,7 +46,7 @@ it('prevents agents to load the create ticket page', function () {
 
 it('prevents agents from creating tickets', function () {
     $user = User::factory()->create([
-        'role' => 'agents',
+        'role' => 'agent',
     ]);
 
     $this->actingAs($user)

@@ -25,7 +25,7 @@
                                     <div class="col-span-full">
                                         <label for="subject" class="block text-sm/6 font-medium text-gray-800">Subject*</label>
                                         <div class="mt-2">
-                                            <input id="subject" type="text" name="subject" value="{{ old('subject') }}" placeholder="I'm not able to login..." class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-800 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required />
+                                            <input id="subject" type="text" name="subject" value="{{ old('subject') }}" placeholder="I'm not able to login..." class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-800 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm/6" required />
                                             @error('subject')
                                                 <x-input-error :messages="$message"></x-input-error>
                                             @enderror
@@ -35,7 +35,7 @@
                                     <div class="col-span-full">
                                         <label for="about" class="block text-sm/6 font-medium text-gray-800">Description*</label>
                                         <div class="mt-2">
-                                            <textarea id="description" name="description" rows="5" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-800 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required>{{ old('description') }}</textarea>
+                                            <textarea id="description" name="description" rows="5" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-800 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm/6" required>{{ old('description') }}</textarea>
                                             @error('description')
                                                 <x-input-error :messages="$message"></x-input-error>
                                             @enderror
@@ -52,7 +52,7 @@
                                             <div class="flex items-center gap-x-3">
                                                 @foreach (\App\TicketPriority::cases() as $ticketPriority)
                                                     <div class="flex items-center gap-x-3">
-                                                        <input type="radio" name="priority" value="{{ $ticketPriority->value }}" class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden" required />
+                                                        <input type="radio" name="priority" value="{{ $ticketPriority->value }}" class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden focus:border-indigo-500 focus:ring-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden" required />
                                                         <label for="{{ $ticketPriority->value }}" class="block text-sm/6 font-medium text-gray-800">{{ $ticketPriority->label() }}</label>
                                                     </div>
                                                 @endforeach

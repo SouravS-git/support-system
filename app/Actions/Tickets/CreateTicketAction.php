@@ -13,15 +13,15 @@ class CreateTicketAction
 {
     public function __construct(#[CurrentUser] protected User $user) {}
 
-    public function handle(array $data): Ticket
+    public function handle(array $validatedData): Ticket
     {
         return Ticket::create([
             'created_by' => $this->user->id,
-            'subject' => $data['subject'],
-            'description' => $data['description'],
-            'priority' => TicketPriority::from($data['priority'])->value,
+            'subject' => $validatedData['subject'],
+            'description' => $validatedData['description'],
+            'priority' => TicketPriority::from($validatedData['priority'])->value,
             'sla_due_at' => now()->addHours(
-                match ($data['priority']) {
+                match ($validatedData['priority']) {
                     TicketPriority::HIGH->value => 1,
                     TicketPriority::MEDIUM->value => 4,
                     default => 24
