@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Actions\Tickets;
 
+use App\Enums\TicketPriority;
 use App\Models\Ticket;
 use App\Models\User;
-use App\TicketPriority;
 use Illuminate\Container\Attributes\CurrentUser;
 
 class CreateTicketAction

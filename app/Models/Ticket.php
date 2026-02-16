@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\TicketPriority;
-use App\TicketStatus;
+use App\Enums\TicketPriority;
+use App\Enums\TicketStatus;
 use Database\Factories\TicketFactory;
 use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

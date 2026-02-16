@@ -1,12 +1,12 @@
 <?php
 
+use App\Enums\TicketStatus;
 use App\Models\Ticket;
 use App\Models\User;
-use App\TicketStatus;
 
 it('prevents invalid transitions', function () {
     $ticket = Ticket::factory()->create([
-        'status' => ticketStatus::OPEN,
+        'status' => TicketStatus::OPEN,
     ]);
 
     expect(fn () => $ticket->transitionTo(TicketStatus::CLOSED))
@@ -23,7 +23,9 @@ it('allows agents to mark tickets as resolved', function () {
     ]);
 
     $this->actingAs($agent)
-        ->patch(route('tickets.resolve', $ticket))
+        ->patch(route('tickets.status.update', $ticket), [
+            'status' => TicketStatus::RESOLVED->value,
+        ])
         ->assertRedirectBack();
 
     expect($ticket->fresh()->status)
@@ -41,7 +43,9 @@ it('prevents non-agents from resolving tickets', function () {
     ]);
 
     $this->actingAs($customer)
-        ->patch(route('tickets.resolve', $ticket))
+        ->patch(route('tickets.status.update', $ticket), [
+            'status' => TicketStatus::RESOLVED->value,
+        ])
         ->assertForbidden();
 
 });
@@ -56,7 +60,9 @@ it('allows admins to mark tickets as closed', function () {
     ]);
 
     $this->actingAs($admin)
-        ->patch(route('tickets.close', $ticket))
+        ->patch(route('tickets.status.update', $ticket), [
+            'status' => TicketStatus::CLOSED->value,
+        ])
         ->assertRedirectBack();
 
     expect($ticket->fresh()->status)
@@ -73,7 +79,9 @@ it('prevents non-admins from closing tickets', function () {
     ]);
 
     $this->actingAs($agent)
-        ->patch(route('tickets.close', $ticket))
+        ->patch(route('tickets.status.update', $ticket), [
+            'status' => TicketStatus::CLOSED->value,
+        ])
         ->assertForbidden();
 });
 

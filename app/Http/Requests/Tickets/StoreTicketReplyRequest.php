@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Tickets;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AssignTicketRequest extends FormRequest
+class StoreTicketReplyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,15 +25,8 @@ class AssignTicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'agent_id' => ['required', 'exists:users,id,role,agent'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'agent_id.required' => 'The agent field is required.',
-            'agent_id.exists' => 'The selected agent does not exist.',
+            'message' => ['required', 'string'],
+            'is_internal' => ['sometimes', 'boolean'],
         ];
     }
 }

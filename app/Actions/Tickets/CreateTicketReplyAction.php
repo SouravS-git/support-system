@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\Tickets;
 
+use App\Enums\TicketStatus;
 use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Models\User;
-use App\TicketStatus;
 use Illuminate\Container\Attributes\CurrentUser;
 
-class TicketReplyAction
+class CreateTicketReplyAction
 {
     public function __construct(#[CurrentUser] protected User $user) {}
 
@@ -30,16 +30,14 @@ class TicketReplyAction
             }
 
             // Status does not change if the reply is internal
-            if (!$reply->is_internal && $ticket->canTransitionTo(TicketStatus::WAITING_FOR_CUSTOMER)) {
+            if (! $reply->is_internal && $ticket->canTransitionTo(TicketStatus::WAITING_FOR_CUSTOMER)) {
                 $ticket->transitionTo(TicketStatus::WAITING_FOR_CUSTOMER);
             }
         }
 
         // Status starts changing to in_progress only after the agent makes the first response
-        if ($this->user->isCustomer() && $ticket->hasFirstResponse()) {
-            if ($ticket->canTransitionTo(TicketStatus::IN_PROGRESS)) {
-                $ticket->transitionTo(TicketStatus::IN_PROGRESS);
-            }
+        if ($this->user->isCustomer() && $ticket->hasFirstResponse() && $ticket->canTransitionTo(TicketStatus::IN_PROGRESS)) {
+            $ticket->transitionTo(TicketStatus::IN_PROGRESS);
         }
 
         return $reply;

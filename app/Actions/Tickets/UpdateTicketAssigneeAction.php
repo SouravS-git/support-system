@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Actions;
+namespace App\Actions\Tickets;
 
+use App\Enums\TicketStatus;
 use App\Events\TicketAssigned;
 use App\Models\Ticket;
-use App\TicketStatus;
 use RuntimeException;
 
-class AssignTicketAction
+class UpdateTicketAssigneeAction
 {
     /**
      * Create a new class instance.

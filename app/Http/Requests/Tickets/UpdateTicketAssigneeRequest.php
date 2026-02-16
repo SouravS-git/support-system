@@ -7,14 +7,14 @@ namespace App\Http\Requests\Tickets;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTicketRequest extends FormRequest
+class UpdateTicketAssigneeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,7 +25,15 @@ class UpdateTicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'agent_id' => ['required', 'exists:users,id,role,agent'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'agent_id.required' => 'The agent field is required.',
+            'agent_id.exists' => 'The selected agent does not exist.',
         ];
     }
 }

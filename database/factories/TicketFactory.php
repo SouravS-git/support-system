@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\TicketPriority;
+use App\Enums\TicketStatus;
 use App\Models\User;
-use App\TicketPriority;
-use App\TicketStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Tickets;
 use App\Actions\Tickets\CreateTicketAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tickets\StoreTicketRequest;
-use App\Http\Requests\Tickets\UpdateTicketRequest;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -79,7 +78,7 @@ class TicketController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTicketRequest $request, Ticket $ticket): void
+    public function update(Ticket $ticket): void
     {
         //
     }

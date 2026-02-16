@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Tickets;
 
 use Illuminate\Contracts\Validation\ValidationRule;
+use App\Enums\TicketStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreTicketReplyRequest extends FormRequest
+class UpdateTicketStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,8 +27,7 @@ class StoreTicketReplyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'message' => ['required', 'string'],
-            'is_internal' => ['sometimes', 'boolean'],
+            'status' => ['required', Rule::in([TicketStatus::RESOLVED->value, TicketStatus::CLOSED->value])],
         ];
     }
 }

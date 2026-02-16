@@ -1,9 +1,9 @@
 <?php
 
+use App\Enums\TicketStatus;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\TicketAssignedNotification;
-use App\TicketStatus;
 
 it('allows admin to assign tickets to agents', function () {
 
@@ -18,7 +18,7 @@ it('allows admin to assign tickets to agents', function () {
     ]);
 
     $this->actingAs($admin)
-        ->patch(route('tickets.assign', $ticket), [
+        ->patch(route('tickets.assignee.update', $ticket), [
             'agent_id' => $agent->id,
         ])->assertRedirectToRoute('tickets.show', $ticket);
 
@@ -36,7 +36,7 @@ it('prevents non-admins from assigning tickets to agents', function () {
     ]);
 
     $this->actingAs($agent)
-        ->patch(route('tickets.assign', $ticket), [
+        ->patch(route('tickets.assignee.update', $ticket), [
             'agent_id' => $agent->id,
         ])->assertForbidden();
 });
