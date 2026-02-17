@@ -5,9 +5,10 @@ use App\Models\Ticket;
 use App\Models\User;
 
 it('marks ticket as sla breached when overdue', function () {
+    $this->freezeTime();
+
     $ticket = Ticket::factory()->create([
         'sla_due_at' => now()->subHour(),
-        'priority' => 'high',
         'first_response_at' => null,
         'sla_breached_at' => null,
     ]);
@@ -20,13 +21,15 @@ it('marks ticket as sla breached when overdue', function () {
 });
 
 it('stops sla when agent responds', function () {
+    $this->freezeTime();
+
     $agent = User::factory()->create([
         'role' => 'agent',
     ]);
 
     $ticket = Ticket::factory()->for($agent, 'assignee')->create([
-        'sla_due_at' => now()->subHour(),
-        'priority' => 'high',
+        'sla_due_at' => now()->subminute(),
+        'first_response_at' => null,
         'sla_breached_at' => null,
     ]);
 
@@ -35,8 +38,9 @@ it('stops sla when agent responds', function () {
             'message' => 'This is a reply',
         ])->assertRedirectBack();
 
-    expect($ticket->fresh()->first_response_at)
-        ->not()
-        ->toBeNull();
+    CheckSlaBreachJob::dispatch($ticket);
+
+    expect($ticket->fresh()->first_response_at)->not()->toBeNull()
+        ->and($ticket->fresh()->sla_breached_at)->toBeNull();
 
 });

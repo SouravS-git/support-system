@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TicketStatus;
 use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Models\User;
@@ -40,6 +41,7 @@ it('allows agents to reply to tickets assigned to them', function () {
         'ticket_id' => $ticket->id,
         'user_id' => $agent->id,
         'message' => 'This is the message of a reply',
+        'is_internal' => false,
     ]);
 });
 
@@ -59,6 +61,7 @@ it('allows admins to reply to any ticket', function () {
         'ticket_id' => $ticket->id,
         'user_id' => $admin->id,
         'message' => 'This is the message of a reply',
+        'is_internal' => false,
     ]);
 });
 
@@ -116,7 +119,7 @@ it('hides internal replies from customers', function () {
 
     $ticket = Ticket::factory()->for($customer, 'creator')->create();
 
-    $reply = TicketReply::factory()->for($ticket)->create([
+    TicketReply::factory()->for($ticket)->create([
         'message' => 'This is an internal reply',
         'is_internal' => true,
     ]);
@@ -125,4 +128,83 @@ it('hides internal replies from customers', function () {
         ->get(route('tickets.show', $ticket))
         ->assertSee($ticket->subject)
         ->assertDontSee('This is an internal reply');
+});
+
+it('changes the status of the ticket to waiting_for_customer when an agent replies to it', function () {
+    $agent = User::factory()->create([
+        'role' => 'agent',
+    ]);
+
+    $ticket = Ticket::factory()->for($agent, 'assignee')->create([
+        'status' => TicketStatus::IN_PROGRESS,
+    ]);
+
+    $this->actingAs($agent)
+        ->post(route('tickets.replies.store', $ticket), [
+            'message' => 'This is a reply',
+            'is_internal' => false,
+        ])
+        ->assertRedirectBack();
+
+    expect($ticket->fresh()->status)->toBe(TicketStatus::WAITING_FOR_CUSTOMER);
+});
+
+it('does not change the status of the ticket to waiting_for_customer when an agent posts an internal reply', function () {
+    $agent = User::factory()->create([
+        'role' => 'agent',
+    ]);
+
+    $ticket = Ticket::factory()->for($agent, 'assignee')->create([
+        'status' => TicketStatus::IN_PROGRESS,
+    ]);
+
+    $this->actingAs($agent)
+        ->post(route('tickets.replies.store', $ticket), [
+            'message' => 'This is a reply',
+            'is_internal' => true,
+        ])
+        ->assertRedirectBack();
+
+    expect($ticket->fresh()->status)->toBe(TicketStatus::IN_PROGRESS);
+});
+
+it('changes the status of the ticket to in_progress when a customer replies to it', function () {
+    $agent = User::factory()->create([
+        'role' => 'agent',
+    ]);
+    $customer = User::factory()->create([
+        'role' => 'customer',
+    ]);
+    $ticket = Ticket::factory()->for($customer, 'creator')->create([
+        'assigned_to' => $agent->id,
+        'status' => TicketStatus::WAITING_FOR_CUSTOMER,
+        'first_response_at' => now(),
+    ]);
+
+    $this->actingAs($customer)
+        ->post(route('tickets.replies.store', $ticket), [
+            'message' => 'This is a reply',
+        ])
+        ->assertRedirectBack();
+
+    expect($ticket->fresh()->status)->toBe(TicketStatus::IN_PROGRESS);
+});
+
+it('does not change the status of the ticket to in_progress when a customer replies to it but the agent has not responded to it yet', function () {
+    $customer = User::factory()->create([
+        'role' => 'customer',
+    ]);
+
+    $ticket = Ticket::factory()->for($customer, 'creator')->create([
+        'status' => TicketStatus::OPEN,
+        'first_response_at' => null,
+    ]);
+
+    $this->actingAs($customer)
+        ->post(route('tickets.replies.store', $ticket), [
+            'message' => 'This is a reply',
+        ])
+        ->assertRedirectBack();
+
+    expect($ticket->fresh()->status)->toBe(TicketStatus::OPEN);
 });

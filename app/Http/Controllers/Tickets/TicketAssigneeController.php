@@ -21,7 +21,7 @@ class TicketAssigneeController extends Controller
 
         $ticket = $action->handle($request->validated(), $ticket);
 
-        return redirect()->route('tickets.show', $ticket);
+        return redirect()->back();
 
     }
 }

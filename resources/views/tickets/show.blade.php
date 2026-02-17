@@ -21,7 +21,7 @@
 
                         <div class="flex items-center gap-4">
                             <div class="flex items-center gap-2">
-                                <x-status-label :status="$ticket->status->value">
+                                <x-status-label :status="$ticket->status">
                                     {{ $ticket->status->label() }}
                                 </x-status-label>
                             </div>
@@ -29,7 +29,7 @@
                             <div class="h-3 w-px bg-slate-200"></div>
 
                             <div class="scale-90 origin-left">
-                                <x-priority-label :priority="$ticket->priority->value">
+                                <x-priority-label :priority="$ticket->priority">
                                     {{ $ticket->priority->label() }}
                                 </x-priority-label>
                             </div>
@@ -65,8 +65,7 @@
                             @endif
                         @endcan
 
-                        <div
-                            class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
+                        <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
                             <div class="text-sm font-medium text-gray-700">
                                 Assigned Agent:
                                 <span class="font-bold text-indigo-600">
@@ -108,12 +107,34 @@
                         </div>
                     </div>
 
-                    <div class="max-w-7xl mx-auto px-4 py-10">
-                        <div
-                            class="bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden flex flex-col">
+                    {{-- TODO: Need to modify this activity UI --}}
+                    <div class="mt-6 mb-10">
+                        <h3 class="font-semibold mb-3">Activity</h3>
 
-                            <div
-                                class="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                        @foreach($ticket->activities as $activity)
+                            <div class="border-b py-2 text-sm">
+                                <div class="font-medium">
+                                    {{ $activity->type }}
+                                </div>
+
+                                @if($activity->user)
+                                    <div class="text-gray-600">
+                                        By {{ $activity->user->name }}
+                                    </div>
+                                @endif
+
+                                <div class="text-gray-500 text-xs">
+                                    {{ $activity->created_at->diffForHumans() }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    {{-- TODO: Need to modify this activity UI --}}
+
+                    <div class="min-w-full">
+                        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col">
+
+                            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none"
                                          viewBox="0 0 24 24" stroke="currentColor">

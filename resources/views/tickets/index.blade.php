@@ -27,7 +27,7 @@
                                             <div class="px-8 pt-7 pb-2 flex items-center justify-between">
                                                 <div class="flex items-center gap-4">
                                                     <div class="flex items-center gap-2">
-                                                        <x-status-label :status="$ticket->status->value">
+                                                        <x-status-label :status="$ticket->status">
                                                             {{ $ticket->status->label() }}
                                                         </x-status-label>
                                                     </div>
@@ -35,7 +35,7 @@
                                                     <div class="h-3 w-px bg-slate-200"></div>
 
                                                     <div class="scale-90 origin-left">
-                                                        <x-priority-label :priority="$ticket->priority->value">
+                                                        <x-priority-label :priority="$ticket->priority">
                                                             {{ $ticket->priority->label() }}
                                                         </x-priority-label>
                                                     </div>

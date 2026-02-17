@@ -27,7 +27,15 @@ class UpdateTicketStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::in([TicketStatus::RESOLVED->value, TicketStatus::CLOSED->value])],
+            'status' => ['required', Rule::in([TicketStatus::RESOLVED, TicketStatus::CLOSED])],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'status.required' => 'The status field is required.',
+            'status.in' => 'Invalid status.',
         ];
     }
 }

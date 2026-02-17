@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
+use App\Events\TicketStatusChanged;
 use Database\Factories\TicketFactory;
 use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,7 +43,7 @@ class Ticket extends Model
     ];
 
     protected $attributes = [
-        'status' => TicketStatus::OPEN->value,
+        'status' => TicketStatus::OPEN,
     ];
 
     public function creator(): BelongsTo
@@ -58,6 +59,16 @@ class Ticket extends Model
     public function replies(): HasMany
     {
         return $this->hasMany(TicketReply::class);
+    }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(TicketActivity::class)->latest();
+    }
+
+    public function hasFirstResponse(): bool
+    {
+        return $this->first_response_at !== null;
     }
 
     // Domain modeling for business rule enforcement
@@ -80,11 +91,8 @@ class Ticket extends Model
             throw new DomainException('Invalid status transition.');
         }
 
+        $oldStatus = $this->status;
         $this->update(['status' => $newStatus]);
-    }
 
-    public function hasFirstResponse(): bool
-    {
-        return $this->first_response_at !== null;
     }
 }

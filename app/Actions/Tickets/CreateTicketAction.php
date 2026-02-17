@@ -19,7 +19,7 @@ class CreateTicketAction
             'created_by' => $this->user->id,
             'subject' => $validatedData['subject'],
             'description' => $validatedData['description'],
-            'priority' => TicketPriority::from($validatedData['priority'])->value,
+            'priority' => TicketPriority::from($validatedData['priority']),
             'sla_due_at' => now()->addHours(
                 match ($validatedData['priority']) {
                     TicketPriority::HIGH->value => 1,

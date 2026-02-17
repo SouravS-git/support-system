@@ -30,10 +30,20 @@ class StoreTicketRequest extends FormRequest
             'subject' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'priority' => ['required', Rule::in([
-                TicketPriority::LOW->value,
-                TicketPriority::MEDIUM->value,
-                TicketPriority::HIGH->value,
+                TicketPriority::LOW,
+                TicketPriority::MEDIUM,
+                TicketPriority::HIGH,
             ])],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'subject.required' => 'Please enter a subject.',
+            'subject.max' => 'Subject cannot be longer than 255 characters.',
+            'description.required' => 'Please enter a description.',
+            'priority.required' => 'Please select a priority.',
         ];
     }
 }

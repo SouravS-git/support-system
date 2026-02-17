@@ -1,16 +1,13 @@
 <?php
 
-declare(strict_types=1);
-
-namespace App\Notifications;
+namespace App\Notifications\TicketStatusChange;
 
 use App\Models\Ticket;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SlaBreachedNotification extends Notification implements ShouldQueue
+class TicketStatusChangeNotificationForCreator extends Notification
 {
     use Queueable;
 
@@ -38,8 +35,8 @@ class SlaBreachedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('SLA Breach Alert')
-            ->line('A ticket has breached its SLA.')
+            ->subject('New status changed')
+            ->line('Ticket #'.$this->ticket->id.' status has been changed to '.$this->ticket->status->label().'.')
             ->action('View Ticket', route('tickets.show', $this->ticket));
     }
 

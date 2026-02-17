@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Notifications;
+namespace App\Notifications\SlaBreach;
 
 use App\Models\Ticket;
 use Illuminate\Bus\Queueable;
@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TicketAssignedNotification extends Notification implements ShouldQueue
+class TicketSlaBreachNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -38,8 +38,8 @@ class TicketAssignedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('New ticket assigned')
-            ->line('Ticket #'.$this->ticket->id.' has been assigned to you.')
+            ->subject('SLA Breach Alert!')
+            ->line('A ticket has breached its SLA.')
             ->action('View Ticket', route('tickets.show', $this->ticket));
     }
 

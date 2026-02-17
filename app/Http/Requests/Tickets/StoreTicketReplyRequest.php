@@ -29,4 +29,12 @@ class StoreTicketReplyRequest extends FormRequest
             'is_internal' => ['sometimes', 'boolean'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'message.required' => 'Please enter something.',
+            'is_internal.boolean' => 'Invalid data.',
+        ];
+    }
 }

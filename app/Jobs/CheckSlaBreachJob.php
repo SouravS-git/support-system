@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Events\TicketSlaBreached;
 use App\Models\Ticket;
 use App\Models\User;
-use App\Notifications\SlaBreachedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -40,11 +40,11 @@ class CheckSlaBreachJob implements ShouldQueue
             ->whereNull('sla_notified_at')
             ->each(function (Ticket $ticket) {
                 User::where('role', 'admin')->each(function (User $admin) use ($ticket) {
-                    $admin->notify(new SlaBreachedNotification($ticket));
+                    // Creates an activity log and sends an email notification to the admin
+                    TicketSlaBreached::dispatch($ticket, $admin);
                 });
 
                 $ticket->update(['sla_notified_at' => now()]);
-
             });
     }
 }

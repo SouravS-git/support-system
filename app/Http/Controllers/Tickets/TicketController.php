@@ -22,9 +22,9 @@ class TicketController extends Controller
         $user = Auth::user();
 
         $tickets = match (true) {
-            $user->isAdmin() => Ticket::latest()->paginate(10),
-            $user->isAgent() => $user->assignedTickets()->latest()->paginate(10),
-            default => $user->createdTickets()->latest()->paginate(10),
+            $user->isAdmin() => Ticket::latest('id')->paginate(10),
+            $user->isAgent() => $user->assignedTickets()->latest('id')->paginate(10),
+            default => $user->createdTickets()->latest('id')->paginate(10),
         };
 
         return view('tickets.index', [
@@ -62,7 +62,7 @@ class TicketController extends Controller
         Gate::authorize('view', $ticket);
 
         return view('tickets.show', [
-            'ticket' => $ticket,
+            'ticket' => $ticket->load('replies', 'activities'),
             'agents' => User::where('role', 'agent')->get(),
         ]);
     }

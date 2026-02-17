@@ -39,10 +39,10 @@ class DatabaseSeeder extends Seeder
 
         $tickets = Ticket::factory(100)->create([
             'created_by' => $customer->id,
-            'assigned_to' => $agent->id,
+            //'assigned_to' => $agent->id,
         ]);
 
-        for ($i = 0; $i < 100; $i++) {
+        /*for ($i = 0; $i < 100; $i++) {
             TicketReply::factory(10)->recycle($tickets)->create([
                 'user_id' => $agent->id,
             ]);
@@ -56,6 +56,6 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $admin->id,
                 'is_internal' => true,
             ]);
-        }
+        }*/
     }
 }
