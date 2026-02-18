@@ -38,8 +38,8 @@ class TicketAssignmentNotificationForCreator extends Notification implements Sho
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Your ticket has been assigned to an agent')
-            ->line('Ticket #'.$this->ticket->id.' has been assigned to '.$this->ticket->assignee->email)
+            ->subject('Agent assigned for your ticket')
+            ->line('Your ticket (#'.$this->ticket->id.') has been assigned to '.$this->ticket->assignee->name)
             ->action('View Ticket', route('tickets.show', $this->ticket));
     }
 

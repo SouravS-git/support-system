@@ -38,8 +38,8 @@ class TicketCreationNotificationForCreator extends Notification implements Shoul
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Your ticket is created')
-            ->line('A ticket #'.$this->ticket->id.' is created by you.')
+            ->subject('A new ticket is created')
+            ->line('A ticket (#'.$this->ticket->id.') is created by you.')
             ->action('View Ticket', route('tickets.show', $this->ticket));
     }
 

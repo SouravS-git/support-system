@@ -11,6 +11,7 @@ use App\Notifications\TicketAssignment\TicketAssignmentNotificationForCreator;
 use App\Notifications\TicketCreation\TicketCreationNotificationForCreator;
 use App\Notifications\TicketStatusChange\TicketStatusChangeNotificationForAssignee;
 use App\Notifications\TicketStatusChange\TicketStatusChangeNotificationForCreator;
+use Illuminate\Support\Facades\Notification;
 
 it('creates a log and notifies the creator when the ticket is created', function () {
     Notification::fake();

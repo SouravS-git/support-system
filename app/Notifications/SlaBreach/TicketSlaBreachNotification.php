@@ -39,7 +39,7 @@ class TicketSlaBreachNotification extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject('SLA Breach Alert!')
-            ->line('A ticket has breached its SLA.')
+            ->line('A ticket has breached its SLA. Please take action.')
             ->action('View Ticket', route('tickets.show', $this->ticket));
     }
 

@@ -39,7 +39,7 @@ class TicketAssignmentNotificationForAssignee extends Notification implements Sh
     {
         return (new MailMessage)
             ->subject('New ticket assigned')
-            ->line('Ticket #'.$this->ticket->id.' has been assigned to you.')
+            ->line('A Ticket (#'.$this->ticket->id.') has been assigned to you. Please take action.')
             ->action('View Ticket', route('tickets.show', $this->ticket));
     }
 

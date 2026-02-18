@@ -35,8 +35,8 @@ class TicketStatusChangeNotificationForAssignee extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('New status changed')
-            ->line('Ticket #'.$this->ticket->id.' status has been changed to '.$this->ticket->status->label().'.')
+            ->subject('Ticket status changed')
+            ->line('Ticket (#'.$this->ticket->id.') status has been changed to '.$this->ticket->status->label().'.')
             ->action('View Ticket', route('tickets.show', $this->ticket));
     }
 

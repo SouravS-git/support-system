@@ -7,9 +7,7 @@ use App\Http\Controllers\Tickets\TicketReplyController;
 use App\Http\Controllers\Tickets\TicketStatusController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('welcome'));
-
-/* Route::get('/dashboard', fn () => view('dashboard'))->middleware(['auth', 'verified'])->name('dashboard'); */
+Route::redirect('/', '/tickets')->name('home');
 
 Route::redirect('/dashboard', '/tickets')->name('dashboard');
 
