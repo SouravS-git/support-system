@@ -23,23 +23,35 @@ class TicketReplyPolicy
      */
     public function view(User $user, TicketReply $ticketReply): bool
     {
-        return false;
+        return ! ($user->isCustomer() && $ticketReply->is_internal);
     }
 
     /**
      * Determine whether the user can create models.
+     * @param User $user
+     * @param Ticket $ticket
+     * @param $false
+     * @return bool
      */
     public function create(User $user, Ticket $ticket): bool
     {
-        if ($user->isAdmin()) {
-            return true;
+        // No user can reply to a closed ticket, and customers can reply only to the non-resolved tickets
+        if(! $ticket->isClosed()){
+
+            if ($user->isAdmin()) {
+                return true;
+            }
+
+            if ($user->isAgent()) {
+                return $ticket->assigned_to === $user->id;
+            }
+
+            if ($user->isCustomer()) {
+                return (! $ticket->isResolved()) && ($ticket->created_by === $user->id);
+            }
         }
 
-        if ($user->isAgent()) {
-            return $ticket->assigned_to === $user->id;
-        }
-
-        return $ticket->created_by === $user->id;
+        return false;
     }
 
     /**

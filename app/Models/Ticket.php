@@ -71,6 +71,16 @@ class Ticket extends Model
         return $this->first_response_at !== null;
     }
 
+    public function isResolved(): bool
+    {
+        return $this->status === TicketStatus::RESOLVED;
+    }
+
+    public function isClosed(): bool
+    {
+        return $this->status === TicketStatus::CLOSED;
+    }
+
     // Domain modeling for business rule enforcement
     public function canTransitionTo(TicketStatus $newStatus): bool
     {

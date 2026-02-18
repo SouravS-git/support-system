@@ -213,7 +213,7 @@
                                     class="h-[600px] overflow-y-auto p-6 space-y-8 bg-white"
                                 >
                                     @foreach ($ticket->replies as $reply)
-                                        @if (!$reply->is_internal || auth()->user()->isAgent() || auth()->user()->isAdmin())
+                                        @can('view', $reply)
                                             <div
                                                 class="flex gap-4 {{ $reply->user_id === request()->user()->id ? 'flex-row-reverse' : '' }}">
                                                 <div class="flex-shrink-0">
@@ -246,60 +246,62 @@
                                                     @endif
                                                 </div>
                                             </div>
-                                        @endif
+                                        @endcan
                                     @endforeach
                                 </div>
                             @endif
 
-                            <div class="p-6 bg-gray-50 border-t border-gray-200">
-                                <form action="{{ route('tickets.replies.store', $ticket) }}" method="POST"
-                                      class="space-y-4">
-                                    @csrf
-                                    <div class="relative">
-                                        <textarea
-                                            name="message"
-                                            rows="5"
-                                            placeholder="Share your thoughts or updates..."
-                                            class="w-full p-4 rounded-xl border border-gray-300 shadow-inner transition-all focus:outline-2 focus:-outline-offset-2 focus:border-indigo-500 focus:ring-indigo-500 text-sm resize-none"
-                                            required
-                                        ></textarea>
-                                        @error('message')
-                                        <x-input-error messages="{{ $message }}"></x-input-error>
-                                        @enderror
-                                    </div>
-
-                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                        <div>
-                                            @if (auth()->user()->isAgent() || auth()->user()->isAdmin())
-                                                <label class="inline-flex items-center cursor-pointer group">
-                                                    <div class="relative">
-                                                        <input type="checkbox" name="is_internal" value="1"
-                                                               class="sr-only peer">
-                                                        <div
-                                                            class="w-5 h-5 bg-white border-2 border-gray-300 rounded peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all"></div>
-                                                        <svg
-                                                            class="absolute w-3.5 h-3.5 text-white top-0.5 left-0.5 opacity-0 peer-checked:opacity-100 transition-opacity"
-                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                            stroke-width="4">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                  d="M5 13l4 4L19 7"/>
-                                                        </svg>
-                                                    </div>
-                                                    <span
-                                                        class="ml-3 text-sm font-medium text-gray-600 group-hover:text-gray-800 transition-colors">Internal Note</span>
-                                                </label>
-                                                @error('is_internal')
-                                                <x-input-error messages="{{ $message }}"></x-input-error>
-                                                @enderror
-                                            @endif
+                            @can('create', [\App\Models\TicketReply::class, $ticket])
+                                <div class="p-6 bg-gray-50 border-t border-gray-200">
+                                    <form action="{{ route('tickets.replies.store', $ticket) }}" method="POST"
+                                          class="space-y-4">
+                                        @csrf
+                                        <div class="relative">
+                                            <textarea
+                                                name="message"
+                                                rows="5"
+                                                placeholder="Share your thoughts or updates..."
+                                                class="w-full p-4 rounded-xl border border-gray-300 shadow-inner transition-all focus:outline-2 focus:-outline-offset-2 focus:border-indigo-500 focus:ring-indigo-500 text-sm resize-none"
+                                                required
+                                            ></textarea>
+                                            @error('message')
+                                            <x-input-error messages="{{ $message }}"></x-input-error>
+                                            @enderror
                                         </div>
-                                        <button type="submit"
-                                                class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                            Post Comment
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+
+                                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div>
+                                                @if (auth()->user()->isAgent() || auth()->user()->isAdmin())
+                                                    <label class="inline-flex items-center cursor-pointer group">
+                                                        <div class="relative">
+                                                            <input type="checkbox" name="is_internal" value="1"
+                                                                   class="sr-only peer">
+                                                            <div
+                                                                class="w-5 h-5 bg-white border-2 border-gray-300 rounded peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all"></div>
+                                                            <svg
+                                                                class="absolute w-3.5 h-3.5 text-white top-0.5 left-0.5 opacity-0 peer-checked:opacity-100 transition-opacity"
+                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                                stroke-width="4">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                      d="M5 13l4 4L19 7"/>
+                                                            </svg>
+                                                        </div>
+                                                        <span
+                                                            class="ml-3 text-sm font-medium text-gray-600 group-hover:text-gray-800 transition-colors">Internal Note</span>
+                                                    </label>
+                                                    @error('is_internal')
+                                                    <x-input-error messages="{{ $message }}"></x-input-error>
+                                                    @enderror
+                                                @endif
+                                            </div>
+                                            <button type="submit"
+                                                    class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                Post Comment
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            @endcan
                         </div>
                     </div>
                 </div>
