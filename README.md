@@ -1,112 +1,91 @@
-# Support Ticket & SLA Management System
+# Support System – Ticket & SLA Management
 
-A production-style internal support system built with Laravel 12, implementing role-based authorization, first-response SLA tracking, and queued background processing.
+A workflow-driven support ticket system built with **Laravel 12**, focusing on domain integrity, event-driven architecture, and SLA automation.
 
-This project demonstrates clean domain modeling, business rule enforcement, and idempotent job design.
-
----
-
-## 🚀 Tech Stack
-
-- Laravel 12
-- PHP 8.2+
-- MySQL 8.x
-- Blade + Tailwind (Breeze)
-- Database Queue
-- Scheduler (cron-style execution)
-- Mailpit (local email testing)
-- Pest (feature testing)
-- Laravel Pint (code style)
+This project simulates a real-world internal support tool where customers create tickets, agents manage conversations, and administrators oversee lifecycle and SLA compliance.
 
 ---
 
-## 👥 Roles
+## 🚀 Features
 
-The system supports three roles:
+### 🎟 Ticket Lifecycle
+- Customer creates ticket → `OPEN`
+- First agent reply → `IN_PROGRESS`
+- Agent resolves → `RESOLVED`
+- Admin closes → `CLOSED`
+- Controlled state transitions enforced at model level
 
-- **Admin**
-    - View all tickets
-    - Receive SLA breach notifications
+### 👥 Role-Based Access
+- **Admin** – Assign, close, monitor SLA
+- **Agent** – Reply, resolve
+- **Customer** – Create ticket, reply
+- Authorization handled via Laravel Policies
 
-- **Agent**
-    - View assigned tickets
-    - Reply to tickets
-    - Add internal notes
-
-- **Customer**
-    - Create tickets
-    - View own tickets
-    - Reply publicly
-
-Authorization is enforced using Laravel Policies.
-
----
-
-## 🎫 Features
-
-### Ticket Lifecycle
-- Create support tickets
-- Assign tickets to agents
-- Ticket status management
+### 💬 Ticket Conversation
 - Public and internal replies
-- Soft deletes
+- First response tracking
+- Guarded transition logic
+- Clean separation of reply handling using Action classes
 
-### SLA Management
-- First-response SLA based on priority
-- SLA deadline calculated at ticket creation
-- Automatic SLA breach detection
-- Admin notification on breach
-- Idempotent background job (no duplicate alerts)
+### ⏱ SLA Management
+- First-response SLA tracking
+- Scheduled job checks for SLA breach
+- Idempotent breach detection (no duplicate alerts)
+- Admin notified via queued email
 
-### Background Processing
-- SLA check runs via scheduled job
-- Email notifications are queued
-- Safe to rerun without duplicate side effects
+### 📢 Event-Driven Architecture
+- `TicketStatusChanged`
+- `TicketAssigned`
+- `TicketSlaBreached`
 
-### Testing
-- Feature tests for:
-    - Authorization rules
-    - Ticket visibility
-    - Reply permissions
-    - SLA breach logic
-- Business rules are protected by automated tests
+Side effects handled via listeners:
+- Email notifications
+- Activity logging (audit trail)
+
+### 🧾 Activity Timeline (Audit Log)
+All major actions are recorded:
+- Assignment
+- Status changes
+- SLA breach
+- Resolution
+- Closure
+
+Provides full traceability of ticket lifecycle.
+
+### 🧪 Testing (Pest)
+Feature tests covering:
+- Authorization rules
+- Status transition protection
+- SLA job idempotency
+- Assignment workflow
+- Activity logging
 
 ---
 
-## ⏱ SLA Rules
+## 🏗 Architectural Highlights
 
-| Priority | First Response SLA |
-|----------|-------------------|
-| High     | 1 hour            |
-| Medium   | 4 hours           |
-| Low      | 24 hours          |
+- Domain rules enforced inside the `Ticket` model
+- Controlled state machine using enum-based transitions
+- Application layer separated via Action classes
+- Events and Listeners used for side effects
+- Idempotent scheduled job design
+- Thin controllers
+- Clean commit history following conventional commits
 
-SLA is considered breached if:
-- `first_response_at` is null
-- `sla_due_at` has passed
-
-Notification deduplication is handled using `sla_notified_at`.
+This project emphasizes **correctness, maintainability, and architectural clarity over feature quantity.**
 
 ---
 
-## 🏗 Architecture Decisions
+## 🛠 Tech Stack
 
-### 1. Business Logic in Actions
-Ticket creation and SLA calculation are encapsulated in Action classes.
-
-### 2. Authorization via Policies
-All access control logic is centralized in `TicketPolicy`.
-
-### 3. Idempotent Jobs
-The SLA job:
-- Marks breaches
-- Sends notifications only once
-- Is safe to run multiple times
-
-### 4. Clear Separation of Concerns
-- Controllers remain thin
-- Validation handled via Form Requests
-- Side effects handled via Jobs & Notifications
+- PHP 8.x
+- Laravel 12
+- MySQL
+- Laravel Queue (database driver)
+- Laravel Scheduler
+- Pest (testing)
+- Mailpit (local email testing)
+- Laravel Pint (code formatting)
 
 ---
 
@@ -117,14 +96,12 @@ git clone https://github.com/SouravS-git/support-system.git
 cd support-system
 
 composer install
-npm install
-npm run build
+cp .env.example .env
+php artisan key:generate
 
-php artisan migrate --seed
-php artisan queue:table
+# Configure database in .env
+
 php artisan migrate
+php artisan db:seed
 
-php artisan queue:work
-php artisan schedule:work
-
-php artisan test
+php artisan serve
