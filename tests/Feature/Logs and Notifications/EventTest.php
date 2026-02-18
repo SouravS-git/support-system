@@ -36,7 +36,7 @@ it('creates a log and notifies the creator when the ticket is created', function
         'sla_due_at' => now()->addHours(24),
     ]);
 
-    // TODO: Need to test if the log is generated for the newly created ticket
+    $this->assertDatabaseCount('ticket_activities', 1);
 
     Notification::assertSentTo($customer, TicketCreationNotificationForCreator::class);
 
@@ -94,9 +94,6 @@ it('creates a log and notifies both the assignee and creator when the ticket is 
             'agent_id' => $agent->id,
         ])->assertRedirectBack();
 
-    expect($ticket->fresh()->assigned_to)->toBe($agent->id)
-        ->and($ticket->fresh()->status)->toBe(TicketStatus::IN_PROGRESS);
-
     $this->assertDatabaseHas('ticket_activities', [
         'ticket_id' => $ticket->id,
         'user_id' => $admin->id,
@@ -111,7 +108,7 @@ it('creates a log and notifies both the assignee and creator when the ticket is 
 
 });
 
-it('creates a log and notifies the creator when agent replies', function () {
+/*it('creates a log and notifies the creator when agent replies', function () {
     Notification::fake();
 
     $agent = User::factory()->create([
@@ -155,9 +152,9 @@ it('creates a log and notifies the creator when agent replies', function () {
     $this->assertDatabaseCount('ticket_activities', 1);
 
     Notification::assertSentToTimes($ticket->creator, TicketStatusChangeNotificationForCreator::class, 1);
-});
+});*/
 
-it('creates a log and notifies the assignee when customer replies', function () {
+/*it('creates a log and notifies the assignee when customer replies', function () {
     Notification::fake();
     $this->freezeTime();
 
@@ -209,4 +206,4 @@ it('creates a log and notifies the assignee when customer replies', function () 
 
     Notification::assertSentToTimes($ticket->assignee, TicketStatusChangeNotificationForAssignee::class, 1);
 
-});
+});*/

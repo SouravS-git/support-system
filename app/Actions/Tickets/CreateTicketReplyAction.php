@@ -26,10 +26,14 @@ class CreateTicketReplyAction
         // SLA Stops when the agent makes the first response, and it's true even for internal replies
         if ($this->user->isAgent() && ! $ticket->hasFirstResponse()) {
             $ticket->update(['first_response_at' => now()]);
+
+            $ticket->transitionTo(TicketStatus::IN_PROGRESS);
+            TicketStatusChanged::dispatch($ticket, TicketStatus::OPEN, TicketStatus::IN_PROGRESS, 'creator');
         }
 
+        // TODO: Notification and logs for conversation between agent and customer should be handled differently
         // No status changes if the reply is internal
-        if (! $reply->is_internal) {
+        /*if (! $reply->is_internal) {
 
             if ($this->user->isAgent()) {
                 // Status changes if the ticket is IN_PROGRESS
@@ -50,7 +54,7 @@ class CreateTicketReplyAction
                     TicketStatusChanged::dispatch($ticket, TicketStatus::WAITING_FOR_CUSTOMER, TicketStatus::IN_PROGRESS, 'assignee');
                 }
             }
-        }
+        }*/
 
         return $reply;
     }

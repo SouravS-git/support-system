@@ -28,10 +28,6 @@ class UpdateTicketAssigneeAction
                 'assigned_to' => $validatedData['agent_id'],
             ]);
 
-            if($ticket->status === TicketStatus::OPEN){
-                $ticket->transitionTo(TicketStatus::IN_PROGRESS);
-            }
-
             // Creates an activity log and sends email notifications to the assigned agent and customer
             TicketAssigned::dispatch($ticket);
         }
