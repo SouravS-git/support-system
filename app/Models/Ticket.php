@@ -63,7 +63,7 @@ class Ticket extends Model
 
     public function activities(): HasMany
     {
-        return $this->hasMany(TicketActivity::class)->latest();
+        return $this->hasMany(TicketActivity::class)->oldest();
     }
 
     public function hasFirstResponse(): bool

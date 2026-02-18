@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\Enums\TicketActivityType;
+use App\Enums\TicketStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TicketActivity extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'ticket_id',
         'user_id',
@@ -16,6 +21,7 @@ class TicketActivity extends Model
 
     protected $casts = [
         'meta' => 'array',
+        'type' => TicketActivityType::class,
     ];
 
     public function ticket(): BelongsTo

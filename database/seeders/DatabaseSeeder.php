@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\TicketActivityType;
 use App\Models\Ticket;
-use App\Models\TicketReply;
+use App\Models\TicketActivity;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,8 +18,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         $admin = User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
@@ -37,25 +36,12 @@ class DatabaseSeeder extends Seeder
             'role' => 'customer',
         ]);
 
-        $tickets = Ticket::factory(100)->create([
-            'created_by' => $customer->id,
-            //'assigned_to' => $agent->id,
+        TicketActivity::factory(10)->create([
+            'ticket_id' => Ticket::factory([
+                'created_by' => $customer->id
+            ]),
+            'user_id' => $customer->id,
+            'type' => TicketActivityType::CREATED,
         ]);
-
-        /*for ($i = 0; $i < 100; $i++) {
-            TicketReply::factory(10)->recycle($tickets)->create([
-                'user_id' => $agent->id,
-            ]);
-
-            TicketReply::factory(10)->recycle($tickets)->create([
-                'user_id' => $customer->id,
-                'is_internal' => false,
-            ]);
-
-            TicketReply::factory(10)->recycle($tickets)->create([
-                'user_id' => $admin->id,
-                'is_internal' => true,
-            ]);
-        }*/
     }
 }

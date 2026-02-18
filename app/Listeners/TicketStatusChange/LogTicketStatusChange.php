@@ -2,6 +2,7 @@
 
 namespace App\Listeners\TicketStatusChange;
 
+use App\Enums\TicketActivityType;
 use App\Events\TicketStatusChanged;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -27,7 +28,7 @@ class LogTicketStatusChange
 
         $ticket->activities()->create([
             'user_id' => $this->user->id,
-            'type' => 'status_changed',
+            'type' => TicketActivityType::STATUS_CHANGED,
             'meta' => [
                 'from' => $oldStatus,
                 'to' => $newStatus,

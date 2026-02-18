@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Listeners\TicketAssignment;
+namespace App\Listeners\TicketCreation;
 
 use App\Enums\TicketActivityType;
-use App\Events\TicketAssigned;
-use App\Models\TicketActivity;
+use App\Events\TicketCreated;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 
-class LogTicketAssignment
+class LogTicketCreation
 {
     /**
      * Create the event listener.
@@ -21,16 +20,13 @@ class LogTicketAssignment
     /**
      * Handle the event.
      */
-    public function handle(TicketAssigned $event): void
+    public function handle(TicketCreated $event): void
     {
         $ticket = $event->ticket;
 
         $ticket->activities()->create([
             'user_id' => $this->user->id,
-            'type' => TicketActivityType::ASSIGNED,
-            'meta' => [
-                'assigned_to' => $ticket->assigned_to,
-            ],
+            'type' => TicketActivityType::CREATED,
         ]);
     }
 }

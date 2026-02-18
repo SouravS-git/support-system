@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Tickets;
 
 use App\Enums\TicketPriority;
+use App\Events\TicketCreated;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -15,7 +16,7 @@ class CreateTicketAction
 
     public function handle(array $validatedData): Ticket
     {
-        return Ticket::create([
+        $ticket = Ticket::create([
             'created_by' => $this->user->id,
             'subject' => $validatedData['subject'],
             'description' => $validatedData['description'],
@@ -28,5 +29,10 @@ class CreateTicketAction
                 }
             ),
         ]);
+
+        // Creates an activity log and sends email notifications to the creator
+        TicketCreated::dispatch($ticket);
+
+        return $ticket;
     }
 }

@@ -1,3 +1,7 @@
+@php
+    use App\Enums\TicketActivityType;
+    use App\Enums\TicketStatus;
+@endphp
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between">
@@ -36,12 +40,12 @@
                         </div>
 
                         @can('resolve', $ticket)
-                            @if($ticket->canTransitionTo(\App\Enums\TicketStatus::RESOLVED))
+                            @if($ticket->canTransitionTo(TicketStatus::RESOLVED))
                                 <div class="flex items-center justify-end">
                                     <form method="POST" action="{{ route('tickets.status.update', $ticket) }}">
                                         @csrf
                                         @method('PATCH')
-                                        <input type="hidden" name="status" value="{{ \App\Enums\TicketStatus::RESOLVED }}">
+                                        <input type="hidden" name="status" value="{{ TicketStatus::RESOLVED }}">
                                         <button class="bg-blue-600 text-white px-3 py-1 rounded">
                                             Mark as Resolved
                                         </button>
@@ -51,12 +55,12 @@
                         @endcan
 
                         @can('close', $ticket)
-                            @if($ticket->canTransitionTo(\App\Enums\TicketStatus::CLOSED))
+                            @if($ticket->canTransitionTo(TicketStatus::CLOSED))
                                 <div class="flex items-center justify-end">
                                     <form method="POST" action="{{ route('tickets.status.update', $ticket) }}">
                                         @csrf
                                         @method('PATCH')
-                                        <input type="hidden" name="status" value="{{ \App\Enums\TicketStatus::CLOSED }}">
+                                        <input type="hidden" name="status" value="{{ TicketStatus::CLOSED }}">
                                         <button class="bg-gray-800 text-white px-3 py-1 rounded">
                                             Close Ticket
                                         </button>
@@ -65,76 +69,128 @@
                             @endif
                         @endcan
 
-                        <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
+                        <div class="pt-4">
+                            <p>{{ $ticket->description }}</p>
+                        </div>
+                        <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div class="text-sm font-medium text-gray-700">
                                 Assigned Agent:
-                                <span class="font-bold text-indigo-600">
+                                <span class="font-bold text-indigo-600 sm:inline">
                                     {{ $ticket->assignee->name ?? 'Not yet assigned' }}
                                 </span>
                             </div>
+
                             @can('assign', $ticket)
-                                <div class="flex items-end gap-4">
+                                <div class="sm:w-auto">
                                     <form action="{{ route('tickets.assignee.update', $ticket) }}" method="POST"
-                                          class="flex items-center gap-2">
+                                          class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                         @csrf
                                         @method('PATCH')
+
                                         <select name="agent_id"
-                                                class="text-sm rounded-md border-gray-300 shadow-inner transition-all focus:outline-2 focus:-outline-offset-2 focus:border-indigo-500 focus:ring-indigo-500">
+                                                class="flex-1 text-sm rounded-md border-gray-300 shadow-inner transition-all focus:outline-2 focus:-outline-offset-2 focus:border-indigo-500 focus:ring-indigo-500 min-w-[200px]">
                                             <option value="">Select Agent</option>
                                             @foreach($agents as $agent)
-                                                <option value="{{ $agent->id }}"
-                                                        name="agent_id" @selected($ticket->assigned_to == $agent->id)>
-                                                    {{ $agent->name }}&nbsp;({{ $agent->email }})
+                                                <option value="{{ $agent->id }}" @selected($ticket->assigned_to == $agent->id)>
+                                                    {{ $agent->name }} ({{ $agent->email }})
                                                 </option>
                                             @endforeach
                                         </select>
+
                                         <button type="submit"
-                                                class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                class="whitespace-nowrap rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors">
                                             Assign
                                         </button>
                                     </form>
                                 </div>
                             @endcan
                         </div>
-                        <div class="flex items-center justify-end">
+
+                        <div class="flex items-center justify-end mt-1">
                             @error('agent_id')
                             <x-input-error :messages="$message"></x-input-error>
                             @enderror
                         </div>
+                    </div>
 
-                        <div class="pt-4">
-                            <p>{{ $ticket->description }}</p>
+                    {{-- Section to show activity log --}}
+                    <div class="mt-4 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <h3 class="font-bold text-gray-800">Activity Log</h3>
+                            </div>
+                        </div>
+
+                        <div class="p-8">
+                            <div class="relative space-y-0">
+                                @foreach($ticket->activities as $activity)
+                                    @php
+                                        $isLatest = $loop->last;
+                                        $isClosed = $ticket->status->value === 'closed';
+                                    @endphp
+
+                                    <div class="relative flex gap-x-6 pb-10 last:pb-0">
+
+                                        <div class="relative flex flex-col items-center flex-shrink-0 w-5">
+                                            @if(!$loop->last)
+                                                <div class="absolute top-6 w-0.5 h-full bg-gray-100">
+                                                    {{-- The progress bar fills up to the latest point --}}
+                                                    <div class="absolute top-0 w-full h-full bg-indigo-500"></div>
+                                                </div>
+                                            @endif
+
+                                            <div class="z-10 flex h-5 w-5 items-center justify-center rounded-full border-2
+                                                {{ $isLatest && !$isClosed ? 'border-indigo-600 ring-4 ring-indigo-50' : '' }}
+                                                {{ $isLatest && $isClosed ? 'border-gray-300 bg-gray-50' : '' }}
+                                                {{ !$isLatest ? 'border-indigo-500 bg-indigo-500' : '' }} transition-all duration-300">
+
+                                                @if($isLatest)
+                                                    @if($isClosed)
+                                                        <div class="h-1.5 w-1.5 rounded-full bg-gray-400"></div>
+                                                    @else
+                                                        <div class="h-1.5 w-1.5 rounded-full bg-indigo-600 animate-pulse"></div>
+                                                    @endif
+                                                @else
+                                                    <div class="h-1 w-1 rounded-full bg-white"></div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="flex-1 pt-0.5 min-w-0">
+                                            <div class="flex justify-between items-start gap-4">
+                                                <div class="truncate">
+                                                    <h4 class="text-xs font-bold uppercase tracking-wide {{ $isLatest && $isClosed ? 'text-gray-400' : 'text-gray-900' }}">
+                                                        @if($activity->type === TicketActivityType::STATUS_CHANGED)
+                                                            {{ TicketStatus::from($activity->meta['to'])->label() }}
+                                                        @else
+                                                            {{ $activity->type->label() }}
+                                                        @endif
+                                                    </h4>
+                                                    <p class="mt-1 text-xs {{ $isLatest && $isClosed ? 'text-gray-300' : 'text-gray-500' }} truncate">
+                                                        {{ $activity->user->name }} • {{ $activity->created_at->format('M d, Y') }}
+                                                    </p>
+                                                </div>
+                                                <time class="text-[10px] font-bold text-gray-400 tabular-nums uppercase whitespace-nowrap">
+                                                    {{ $activity->created_at->diffForHumans() }}
+                                                </time>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
 
-                    {{-- TODO: Need to modify this activity UI --}}
-                    <div class="mt-6 mb-10">
-                        <h3 class="font-semibold mb-3">Activity</h3>
+                    {{-- Section to show comments --}}
+                    <div class="min-w-full mt-4">
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col">
 
-                        @foreach($ticket->activities as $activity)
-                            <div class="border-b py-2 text-sm">
-                                <div class="font-medium">
-                                    {{ $activity->type }}
-                                </div>
-
-                                @if($activity->user)
-                                    <div class="text-gray-600">
-                                        By {{ $activity->user->name }}
-                                    </div>
-                                @endif
-
-                                <div class="text-gray-500 text-xs">
-                                    {{ $activity->created_at->diffForHumans() }}
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    {{-- TODO: Need to modify this activity UI --}}
-
-                    <div class="min-w-full">
-                        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col">
-
-                            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                            <div
+                                class="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none"
                                          viewBox="0 0 24 24" stroke="currentColor">
@@ -154,7 +210,7 @@
                                 <div
                                     x-data
                                     x-init="$nextTick(() => { $el.scrollTop = $el.scrollHeight })"
-                                    class="h-[500px] overflow-y-auto p-6 space-y-8 bg-white"
+                                    class="h-[600px] overflow-y-auto p-6 space-y-8 bg-white"
                                 >
                                     @foreach ($ticket->replies as $reply)
                                         @if (!$reply->is_internal || auth()->user()->isAgent() || auth()->user()->isAdmin())
@@ -196,7 +252,8 @@
                             @endif
 
                             <div class="p-6 bg-gray-50 border-t border-gray-200">
-                                <form action="{{ route('tickets.replies.store', $ticket) }}" method="POST" class="space-y-4">
+                                <form action="{{ route('tickets.replies.store', $ticket) }}" method="POST"
+                                      class="space-y-4">
                                     @csrf
                                     <div class="relative">
                                         <textarea

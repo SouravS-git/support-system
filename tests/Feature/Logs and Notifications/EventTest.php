@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use App\Jobs\CheckSlaBreachJob;
 use App\Models\Ticket;
@@ -7,8 +8,39 @@ use App\Models\User;
 use App\Notifications\SlaBreach\TicketSlaBreachNotification;
 use App\Notifications\TicketAssignment\TicketAssignmentNotificationForAssignee;
 use App\Notifications\TicketAssignment\TicketAssignmentNotificationForCreator;
+use App\Notifications\TicketCreation\TicketCreationNotificationForCreator;
 use App\Notifications\TicketStatusChange\TicketStatusChangeNotificationForAssignee;
 use App\Notifications\TicketStatusChange\TicketStatusChangeNotificationForCreator;
+
+it('creates a log and notifies the creator when the ticket is created', function () {
+    Notification::fake();
+    $this->freezeTime();
+
+    $customer = User::factory()->create([
+        'role' => 'customer',
+    ]);
+
+    $this->actingAs($customer)
+        ->post('/tickets', [
+            'subject' => 'This is the subject of a ticket',
+            'description' => 'This is the description of a ticket',
+            'priority' => TicketPriority::LOW->value,
+        ]);
+
+    $this->assertDatabaseHas('tickets', [
+        'created_by' => $customer->id,
+        'subject' => 'This is the subject of a ticket',
+        'description' => 'This is the description of a ticket',
+        'priority' => TicketPriority::LOW,
+        'status' => TicketStatus::OPEN,
+        'sla_due_at' => now()->addHours(24),
+    ]);
+
+    // TODO: Need to test if the log is generated for the newly created ticket
+
+    Notification::assertSentTo($customer, TicketCreationNotificationForCreator::class);
+
+});
 
 it('creates a log and notifies admin when ticket sla breaches', function () {
     $this->freezeTime();

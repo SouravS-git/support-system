@@ -2,6 +2,7 @@
 
 namespace App\Listeners\SlaBreach;
 
+use App\Enums\TicketActivityType;
 use App\Events\TicketSlaBreached;
 
 class LogTicketSlaBreach
@@ -23,7 +24,7 @@ class LogTicketSlaBreach
 
         $ticket->activities()->create([
             'user_id' => null,
-            'type' => 'sla_breached',
+            'type' => TicketActivityType::SLA_BREACHED,
         ]);
     }
 }
