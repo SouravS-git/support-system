@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
 
         TicketActivity::factory(10)->create([
             'ticket_id' => Ticket::factory([
-                'created_by' => $customer->id
+                'created_by' => $customer->id,
             ]),
             'user_id' => $customer->id,
             'type' => TicketActivityType::CREATED,

@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Actions\Tickets;
 
-use App\Enums\TicketStatus;
 use App\Events\TicketAssigned;
 use App\Models\Ticket;
-use RuntimeException;
 
 class UpdateTicketAssigneeAction
 {
@@ -19,10 +17,10 @@ class UpdateTicketAssigneeAction
         //
     }
 
-    public function handle(array $validatedData, Ticket $ticket)
+    public function handle(array $validatedData, Ticket $ticket): Ticket
     {
         // To prevent duplicate assignment
-        if($ticket->assigned_to != $validatedData['agent_id']){
+        if ($ticket->assigned_to != $validatedData['agent_id']) {
 
             $ticket->update([
                 'assigned_to' => $validatedData['agent_id'],

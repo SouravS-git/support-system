@@ -28,15 +28,13 @@ class TicketReplyPolicy
 
     /**
      * Determine whether the user can create models.
-     * @param User $user
-     * @param Ticket $ticket
-     * @param $false
-     * @return bool
+     *
+     * @param  $false
      */
     public function create(User $user, Ticket $ticket): bool
     {
         // No user can reply to a closed ticket, and customers can reply only to the non-resolved tickets
-        if(! $ticket->isClosed()){
+        if (! $ticket->isClosed()) {
 
             if ($user->isAdmin()) {
                 return true;

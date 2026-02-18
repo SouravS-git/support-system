@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Listeners\TicketAssignment;
 
 use App\Enums\TicketActivityType;
 use App\Events\TicketAssigned;
-use App\Models\TicketActivity;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 

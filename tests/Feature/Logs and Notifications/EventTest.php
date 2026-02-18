@@ -69,7 +69,7 @@ it('creates a log and notifies admin when ticket sla breaches', function () {
         'ticket_id' => $ticket->id,
         'user_id' => null,
         'type' => 'sla_breached',
-        'meta' => null
+        'meta' => null,
     ]);
     $this->assertDatabaseCount('ticket_activities', 1);
 
@@ -101,7 +101,7 @@ it('creates a log and notifies both the assignee and creator when the ticket is 
         'type' => 'ticket_assigned',
         'meta' => json_encode([
             'assigned_to' => $agent->id,
-        ])
+        ]),
     ]);
 
     Notification::assertSentTo($agent, TicketAssignmentNotificationForAssignee::class);

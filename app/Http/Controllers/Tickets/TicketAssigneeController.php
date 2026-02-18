@@ -19,7 +19,7 @@ class TicketAssigneeController extends Controller
     {
         Gate::authorize('assign', $ticket);
 
-        $ticket = $action->handle($request->validated(), $ticket);
+        $action->handle($request->validated(), $ticket);
 
         return redirect()->back();
 

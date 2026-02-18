@@ -1,10 +1,7 @@
 <?php
 
-use App\Enums\TicketStatus;
 use App\Models\Ticket;
 use App\Models\User;
-use App\Notifications\TicketAssignment\TicketAssignmentNotificationForAssignee;
-use App\Notifications\TicketAssignment\TicketAssignmentNotificationForCreator;
 
 it('allows admin to assign tickets to agents', function () {
     $admin = User::factory()->create([

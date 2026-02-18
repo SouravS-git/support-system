@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
-use App\Events\TicketStatusChanged;
 use Database\Factories\TicketFactory;
 use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -100,8 +99,6 @@ class Ticket extends Model
         if (! $this->canTransitionTo($newStatus)) {
             throw new DomainException('Invalid status transition.');
         }
-
-        $oldStatus = $this->status;
         $this->update(['status' => $newStatus]);
 
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Listeners\TicketStatusChange;
 
 use App\Events\TicketStatusChanged;
@@ -24,15 +26,11 @@ class SendTicketStatusChangeNotification
         $ticket = $event->ticket;
         $sendTo = $event->sendTo;
 
-        if($sendTo == 'creator'){
+        if ($sendTo === 'creator') {
             $ticket->creator->notify(new TicketStatusChangeNotificationForCreator($ticket));
-        }
-
-        elseif($sendTo == 'assignee'){
+        } elseif ($sendTo === 'assignee') {
             $ticket->assignee->notify(new TicketStatusChangeNotificationForAssignee($ticket));
-        }
-
-        else{
+        } else {
             $ticket->creator->notify(new TicketStatusChangeNotificationForCreator($ticket));
             $ticket->assignee->notify(new TicketStatusChangeNotificationForAssignee($ticket));
         }
